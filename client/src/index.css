@@ -1,0 +1,21 @@
+@import "flowbite";
+@import "tailwindcss";
+/* @tailwind utilities; */
+
+#treeWrapper text {
+  font-family: Arial, sans-serif !important;
+  font-weight: normal !important;
+  fill: #000 !important;
+  stroke: none !important;
+  user-select: none;
+}
+.progress {
+  height: 210px;
+  width: 210px;
+}
+
+.progress svg path {
+  stroke: #10b981;
+  stroke-width: 10;
+  fill: none;
+}
