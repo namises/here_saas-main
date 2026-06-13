@@ -16,6 +16,21 @@ import Shift from "./Shift.js";
 import Workdays from "./Workdays.js";
 import FCM from "./FCM.js";
 
+// New modules
+import Branch from "./Branch.js";
+import Asset from "./Asset.js";
+import Expense from "./Expense.js";
+import Announcement from "./Announcement.js";
+import Job from "./Job.js";
+import Candidate from "./Candidate.js";
+import PerformanceReview from "./PerformanceReview.js";
+import Goal from "./Goal.js";
+import CompanyDocument from "./CompanyDocument.js";
+import ApprovalRequest from "./ApprovalRequest.js";
+import ComplianceRecord from "./ComplianceRecord.js";
+import WpsBatch from "./WpsBatch.js";
+import BiometricDevice from "./BiometricDevice.js";
+
 const DB = {
   Organization,
   Employee,
@@ -33,6 +48,20 @@ const DB = {
   Shift,
   Workdays,
   FCM,
+  // New modules
+  Branch,
+  Asset,
+  Expense,
+  Announcement,
+  Job,
+  Candidate,
+  PerformanceReview,
+  Goal,
+  CompanyDocument,
+  ApprovalRequest,
+  ComplianceRecord,
+  WpsBatch,
+  BiometricDevice,
 };
 
 export default DB;

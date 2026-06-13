@@ -96,7 +96,25 @@ export const endpoints = {
   permission: {
     get: `${API_BASE_URL}${version}/permission/get`,
   },
+  analytics: {
+    overview: `${API_BASE_URL}${version}/analytics/overview`,
+    headcount: `${API_BASE_URL}${version}/analytics/headcount`,
+  },
+  compliance: { stats: `${API_BASE_URL}${version}/compliance/stats` },
+  wps: { generate: `${API_BASE_URL}${version}/wps/generate`, download: `${API_BASE_URL}${version}/wps/download` },
+  approval: { act: `${API_BASE_URL}${version}/approval/act` },
 };
+
+// Base URL of a resource's list endpoint — used as the redux loading key.
+export const resourceListUrl = (name) => `${API_BASE_URL}${version}/${name}/list`;
+
+// Generic org-scoped CRUD client matching the backend crudController factory.
+export const resourceApi = (name) => ({
+  list: (params = {}) => get(`${API_BASE_URL}${version}/${name}/list${buildSearchQuery(params)}`),
+  create: (body) => post(`${API_BASE_URL}${version}/${name}/create`, body),
+  update: (body) => post(`${API_BASE_URL}${version}/${name}/update`, body),
+  remove: ({ id }) => post(`${API_BASE_URL}${version}/${name}/delete`, { id }),
+});
 
 export const API = {
   auth: {
@@ -187,5 +205,27 @@ export const API = {
   organization: {
     getSettings: () => get(endpoints.organization.getSettings),
     updateSettings: ({ attendancePunchType }) => post(endpoints.organization.updateSettings, { attendancePunchType }),
+  },
+  // New modules — generic CRUD
+  branch: resourceApi("branch"),
+  asset: resourceApi("asset"),
+  expense: resourceApi("expense"),
+  announcement: resourceApi("announcement"),
+  job: resourceApi("job"),
+  candidate: resourceApi("candidate"),
+  performance: resourceApi("performance"),
+  goal: resourceApi("goal"),
+  document: resourceApi("document"),
+  approval: { ...resourceApi("approval"), act: ({ id, decision, comments }) => post(endpoints.approval.act, { id, decision, comments }) },
+  compliance: { ...resourceApi("compliance"), stats: () => get(endpoints.compliance.stats) },
+  wps: {
+    ...resourceApi("wps"),
+    generate: ({ month, employerId, bankRoutingCode, financialYear }) => post(endpoints.wps.generate, { month, employerId, bankRoutingCode, financialYear }),
+    download: ({ id }) => get(`${endpoints.wps.download}${buildSearchQuery({ id })}`),
+  },
+  biometric: resourceApi("biometric"),
+  analytics: {
+    overview: () => get(endpoints.analytics.overview),
+    headcount: () => get(endpoints.analytics.headcount),
   },
 };

@@ -69,6 +69,18 @@ const permissions = {
     update: "payroll.update",
     readOwn: "payroll.read.own",
   },
+  branch: { create: "branch.create", read: "branch.read", update: "branch.update", delete: "branch.delete" },
+  asset: { create: "asset.create", read: "asset.read", update: "asset.update", delete: "asset.delete" },
+  expense: { create: "expense.create", read: "expense.read", update: "expense.update", delete: "expense.delete" },
+  announcement: { create: "announcement.create", read: "announcement.read", update: "announcement.update", delete: "announcement.delete" },
+  recruitment: { create: "recruitment.create", read: "recruitment.read", update: "recruitment.update", delete: "recruitment.delete" },
+  performance: { create: "performance.create", read: "performance.read", update: "performance.update", delete: "performance.delete" },
+  document: { create: "document.create", read: "document.read", update: "document.update", delete: "document.delete" },
+  approval: { create: "approval.create", read: "approval.read", update: "approval.update", delete: "approval.delete", action: "approval.action" },
+  compliance: { create: "compliance.create", read: "compliance.read", update: "compliance.update", delete: "compliance.delete" },
+  wps: { create: "wps.create", read: "wps.read", update: "wps.update", delete: "wps.delete", generate: "wps.generate" },
+  biometric: { create: "biometric.create", read: "biometric.read", update: "biometric.update", delete: "biometric.delete" },
+  analytics: { read: "analytics.read" },
 };
 
 export default permissions;

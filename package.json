@@ -7,6 +7,7 @@
     "dev:client": "vite",
     "build": "vite build",
     "serve": "node server/index.js",
+    "seed": "node server/seed.js",
     "start": "corepack enable && yarn install && yarn build && yarn serve",
     "postinstall": "flowbite-react patch"
   },

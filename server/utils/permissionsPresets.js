@@ -16,6 +16,11 @@ const permissionsPresets = {
     permissions.payroll.readOwn,
     permissions.holiday.read,
     permissions.workDays.read,
+    permissions.announcement.read,
+    permissions.document.read,
+    permissions.expense.create,
+    permissions.expense.read,
+    permissions.performance.read,
   ],
 
   employeeManager: [
@@ -95,6 +100,20 @@ const permissionsPresets = {
     // Payroll
     permissions.payroll.read,
     permissions.payroll.update,
+
+    // New modules — full access for org admin
+    ...Object.values(permissions.branch),
+    ...Object.values(permissions.asset),
+    ...Object.values(permissions.expense),
+    ...Object.values(permissions.announcement),
+    ...Object.values(permissions.recruitment),
+    ...Object.values(permissions.performance),
+    ...Object.values(permissions.document),
+    ...Object.values(permissions.approval),
+    ...Object.values(permissions.compliance),
+    ...Object.values(permissions.wps),
+    ...Object.values(permissions.biometric),
+    ...Object.values(permissions.analytics),
   ],
 
   superadmin: [

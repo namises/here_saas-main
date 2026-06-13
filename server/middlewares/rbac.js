@@ -5,6 +5,11 @@ import permissions from "../utils/permissions.js";
 
 const rbac = async (req, res, next) => {
   try {
+    // Super admins (org owners) bypass granular RBAC and can access every module.
+    if (req.user?.isSuperAdmin) {
+      next();
+      return;
+    }
     const key = getURLInitials(req.originalUrl);
     const grantedPermissions = req.user.permissions;
 
@@ -74,4 +79,86 @@ const permissionsMap = {
   "/api/v1/payroll/paySlip": [permissions.payroll.read, permissions.payroll.readOwn],
   "/api/v1/fcm/add": "*",
   "/api/v1/permission/get": "*",
+
+  // Multi-branch
+  "/api/v1/branch/list": [permissions.branch.read],
+  "/api/v1/branch/create": [permissions.branch.create],
+  "/api/v1/branch/update": [permissions.branch.update],
+  "/api/v1/branch/delete": [permissions.branch.delete],
+
+  // Assets
+  "/api/v1/asset/list": [permissions.asset.read],
+  "/api/v1/asset/create": [permissions.asset.create],
+  "/api/v1/asset/update": [permissions.asset.update],
+  "/api/v1/asset/delete": [permissions.asset.delete],
+
+  // Expenses
+  "/api/v1/expense/list": [permissions.expense.read],
+  "/api/v1/expense/create": [permissions.expense.create],
+  "/api/v1/expense/update": [permissions.expense.update],
+  "/api/v1/expense/delete": [permissions.expense.delete],
+
+  // Announcements
+  "/api/v1/announcement/list": [permissions.announcement.read],
+  "/api/v1/announcement/create": [permissions.announcement.create],
+  "/api/v1/announcement/update": [permissions.announcement.update],
+  "/api/v1/announcement/delete": [permissions.announcement.delete],
+
+  // Recruitment & ATS
+  "/api/v1/job/list": [permissions.recruitment.read],
+  "/api/v1/job/create": [permissions.recruitment.create],
+  "/api/v1/job/update": [permissions.recruitment.update],
+  "/api/v1/job/delete": [permissions.recruitment.delete],
+  "/api/v1/candidate/list": [permissions.recruitment.read],
+  "/api/v1/candidate/create": [permissions.recruitment.create],
+  "/api/v1/candidate/update": [permissions.recruitment.update],
+  "/api/v1/candidate/delete": [permissions.recruitment.delete],
+
+  // Performance
+  "/api/v1/performance/list": [permissions.performance.read],
+  "/api/v1/performance/create": [permissions.performance.create],
+  "/api/v1/performance/update": [permissions.performance.update],
+  "/api/v1/performance/delete": [permissions.performance.delete],
+  "/api/v1/goal/list": [permissions.performance.read],
+  "/api/v1/goal/create": [permissions.performance.create],
+  "/api/v1/goal/update": [permissions.performance.update],
+  "/api/v1/goal/delete": [permissions.performance.delete],
+
+  // Documents
+  "/api/v1/document/list": [permissions.document.read],
+  "/api/v1/document/create": [permissions.document.create],
+  "/api/v1/document/update": [permissions.document.update],
+  "/api/v1/document/delete": [permissions.document.delete],
+
+  // Approval workflows
+  "/api/v1/approval/list": [permissions.approval.read],
+  "/api/v1/approval/create": [permissions.approval.create],
+  "/api/v1/approval/update": [permissions.approval.update],
+  "/api/v1/approval/delete": [permissions.approval.delete],
+  "/api/v1/approval/act": [permissions.approval.action],
+
+  // UAE Compliance
+  "/api/v1/compliance/list": [permissions.compliance.read],
+  "/api/v1/compliance/create": [permissions.compliance.create],
+  "/api/v1/compliance/update": [permissions.compliance.update],
+  "/api/v1/compliance/delete": [permissions.compliance.delete],
+  "/api/v1/compliance/stats": [permissions.compliance.read],
+
+  // WPS payroll compliance
+  "/api/v1/wps/list": [permissions.wps.read],
+  "/api/v1/wps/create": [permissions.wps.create],
+  "/api/v1/wps/update": [permissions.wps.update],
+  "/api/v1/wps/delete": [permissions.wps.delete],
+  "/api/v1/wps/generate": [permissions.wps.generate],
+  "/api/v1/wps/download": [permissions.wps.read],
+
+  // Biometric devices
+  "/api/v1/biometric/list": [permissions.biometric.read],
+  "/api/v1/biometric/create": [permissions.biometric.create],
+  "/api/v1/biometric/update": [permissions.biometric.update],
+  "/api/v1/biometric/delete": [permissions.biometric.delete],
+
+  // Analytics / reporting
+  "/api/v1/analytics/overview": [permissions.analytics.read],
+  "/api/v1/analytics/headcount": [permissions.analytics.read],
 };

@@ -51,6 +51,22 @@ import getPermission from "./permission/get.js";
 import getOrgSettings from "./organization/getSettings.js";
 import updateOrgSettings from "./organization/updateSettings.js";
 
+// New modules
+import branch from "./branch/index.js";
+import asset from "./asset/index.js";
+import expense from "./expense/index.js";
+import announcement from "./announcement/index.js";
+import job from "./job/index.js";
+import candidate from "./candidate/index.js";
+import performance from "./performance/index.js";
+import goal from "./goal/index.js";
+import companyDocument from "./document/index.js";
+import approval from "./approval/index.js";
+import compliance from "./compliance/index.js";
+import wps from "./wps/index.js";
+import biometric from "./biometric/index.js";
+import analytics from "./analytics/index.js";
+
 const controllers = {
   auth: { login, register, loginDevice },
   department: {
@@ -134,6 +150,21 @@ const controllers = {
     getSettings: getOrgSettings,
     updateSettings: updateOrgSettings,
   },
+  // New modules
+  branch,
+  asset,
+  expense,
+  announcement,
+  job,
+  candidate,
+  performance,
+  goal,
+  companyDocument,
+  approval,
+  compliance,
+  wps,
+  biometric,
+  analytics,
 };
 
 export default controllers;
