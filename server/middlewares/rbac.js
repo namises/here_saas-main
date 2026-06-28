@@ -2,11 +2,15 @@ import { errorStrings } from "../utils/constants.js";
 import { handleError } from "../utils/handlers.js";
 import { getURLInitials } from "../utils/index.js";
 import permissions from "../utils/permissions.js";
+import permissionsPresets from "../utils/permissionsPresets.js";
 
 const rbac = async (req, res, next) => {
   try {
     // Super admins (org owners) bypass granular RBAC and can access every module.
+    // Still populate matchedPermissions (with the full set) so downstream controllers
+    // that branch on it (e.g. employee/attendance/leave list) don't crash on undefined.
     if (req.user?.isSuperAdmin) {
+      req.user.matchedPermissions = permissionsPresets.superadmin;
       next();
       return;
     }
@@ -15,10 +19,12 @@ const rbac = async (req, res, next) => {
 
     const requiredPermissions = permissionsMap[key];
     console.log({ key, requiredPermissions });
-    if (requiredPermissions && requiredPermissions === "*") {
+    if (requiredPermissions === "*") {
       next();
       return;
     }
+    // No mapping for this route → deny cleanly instead of crashing on `.filter` of undefined.
+    if (!requiredPermissions) throw new Error(errorStrings.notPermitted);
     const matchedPermissions = requiredPermissions.filter((p) => grantedPermissions.includes(p));
 
     console.log({ matchedPermissions, grantedPermissions });
@@ -79,6 +85,9 @@ const permissionsMap = {
   "/api/v1/payroll/paySlip": [permissions.payroll.read, permissions.payroll.readOwn],
   "/api/v1/fcm/add": "*",
   "/api/v1/permission/get": "*",
+  // Org settings: any authenticated user may read (e.g. attendance punch type); admins bypass rbac for updates.
+  "/api/v1/organization/settings": "*",
+  "/api/v1/organization/updateSettings": [permissions.workDays.update],
 
   // Multi-branch
   "/api/v1/branch/list": [permissions.branch.read],

@@ -7,7 +7,7 @@ const useOrgSettings = () => {
 
   useEffect(() => {
     API.organization.getSettings().then((res) => {
-      if (res.success) setSettings(res.data.settings);
+      if (res?.success) setSettings(res.data.settings);
     }).finally(() => setLoading(false));
   }, []);
 

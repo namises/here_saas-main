@@ -12,7 +12,7 @@ async function handler(req, res) {
   session.startTransaction();
   try {
     const { organization } = req.user;
-    const { name, email, empCode, mobile, shift, designation, department, manager, password, documents, joiningDate, dob, pan, photo, bankAccount, ifsc } = req.body;
+    const { name, email, empCode, mobile, shift, designation, department, manager, password, documents, joiningDate, dob, pan, photo, bankAccount, ifsc, attendancePunchType } = req.body;
     // check if exists
     const existingEmployee = await DB.Employee.findOne({
       organization,
@@ -42,6 +42,7 @@ async function handler(req, res) {
           photo,
           bankAccount,
           ifsc,
+          attendancePunchType,
         },
       ],
       { session }
@@ -111,6 +112,7 @@ const schema = Joi.object().keys({
   }),
   bankAccount: Joi.string(),
   ifsc: Joi.string(),
+  attendancePunchType: Joi.string().valid("qr", "selfie").optional(),
 });
 const validation = { schema, toValidate: toValidateOptions.body };
 export default { handler, validation };

@@ -5,12 +5,12 @@ import { validateEmail, validateFileUrl, validateIFSC, validateObjectId, validat
 import { handleValidationError } from "../validations/handleValidation";
 import { dispatchSnackbar, snackBarTypes } from "src/utils/snackbar";
 
-const useAddEmployee = (name, email, dob, shift, empCode, mobile, designation, department, manager, password, documents, joiningDate, pan, photo, bankAccount, ifsc, onCreate) => {
+const useAddEmployee = (name, email, dob, shift, empCode, mobile, designation, department, manager, password, documents, joiningDate, pan, photo, bankAccount, ifsc, attendancePunchType, onCreate) => {
   const loading = useSelector((s) => s.apiStatus[endpoints.employee.create]);
   const [error, setError] = useState({});
 
   const handleAddEmployee = async () => {
-    const { success, result } = validator(name, email, dob, shift, empCode, mobile, designation, department, manager, password, documents, joiningDate, pan, photo, bankAccount, ifsc);
+    const { success, result } = validator(name, email, dob, shift, empCode, mobile, designation, department, manager, password, documents, joiningDate, pan, photo, bankAccount, ifsc, attendancePunchType);
     if (success) {
       const res = await API.employee.create(result);
       if (res.success) {
@@ -29,9 +29,12 @@ const useAddEmployee = (name, email, dob, shift, empCode, mobile, designation, d
   return { handleAddEmployee, error, loading };
 };
 
-const validator = (name, email, dob, shift, empCode, mobile, designation, department, manager, password, documents, joiningDate, pan, photo, bankAccount, ifsc) => {
+const validator = (name, email, dob, shift, empCode, mobile, designation, department, manager, password, documents, joiningDate, pan, photo, bankAccount, ifsc, attendancePunchType) => {
   const isInvalid = {};
   const body = {};
+  if (attendancePunchType === "qr" || attendancePunchType === "selfie") {
+    body.attendancePunchType = attendancePunchType;
+  }
 
   if (validateStringLength(name, 3, 100)) {
     body.name = name;

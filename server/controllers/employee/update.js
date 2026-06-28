@@ -68,6 +68,7 @@ const schema = Joi.object({
   }),
   bankAccount: Joi.string(),
   ifsc: Joi.string(),
+  attendancePunchType: Joi.string().valid("qr", "selfie").allow(null),
   permissions: Joi.array().items(Joi.string()),
 });
 

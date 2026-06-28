@@ -17,7 +17,8 @@ const useLeaveBalance = (employee) => {
         const {
           data: { leaves },
         } = res;
-        setLeaveBalances(leaves);
+        // The endpoint returns the employee doc ({ _id, leaveBalances: [...] }), not a bare array.
+        setLeaveBalances(Array.isArray(leaves) ? leaves : leaves?.leaveBalances || []);
       }
     } else {
       setError({ ...result });

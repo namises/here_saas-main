@@ -28,6 +28,20 @@ export const ROUTES = {
     BIOMETRIC: "/biometric-devices",
     REPORTS: "/reports",
   },
+  // Employee self-service portal (shown to non-admin employees)
+  EMPLOYEE: {
+    HOME: "/",
+    ATTENDANCE: "/me/attendance",
+    PROFILE: "/me/profile",
+    LEAVES: "/me/leaves",
+    ANNOUNCEMENTS: "/me/announcements",
+    HOLIDAYS: "/me/holidays",
+    DOCUMENTS: "/me/documents",
+    REIMBURSEMENTS: "/me/reimbursements",
+    NOTES: "/me/notes",
+    ALARM: "/me/alarm",
+    CRM: "/me/crm",
+  },
   AUTH: {
     LOGIN: "/",
     REGISTER: "/register",

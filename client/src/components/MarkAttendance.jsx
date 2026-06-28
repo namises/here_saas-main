@@ -8,6 +8,7 @@ import useOrgSettings from "src/API/hooks/useOrgSettings";
 import { useSelector } from "react-redux";
 import { useElapsedDuration } from "src/hooks/useElapsedDuration";
 import { formatDurationinSec } from "src/utils";
+import { resolvePunchType } from "src/utils/roles";
 import SelfiePunchIn from "./SelfiePunchIn";
 
 const MarkAttendance = () => {
@@ -15,12 +16,14 @@ const MarkAttendance = () => {
   const [result, setResult] = useState(null);
   const handleClose = () => setIsOpen(false);
   const checkInTime = useSelector((s) => s.checkInTime);
+  const user = useSelector((s) => s.user);
   const shiftDuration = useElapsedDuration(checkInTime, 1000);
   const { settings } = useOrgSettings();
 
   const { handleMarkAttendance, loading } = useMarkAttendance(handleClose);
 
-  const punchType = settings?.attendancePunchType ?? "qr";
+  // Per-employee method (manager-set) wins; otherwise fall back to the org-wide setting.
+  const punchType = resolvePunchType(user, settings?.attendancePunchType);
   const showQR = punchType === "qr" || punchType === "both";
   const showSelfie = punchType === "selfie" || punchType === "both";
 

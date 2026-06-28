@@ -1,7 +1,10 @@
 import { onMessage } from "firebase/messaging";
 import React, { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
+import { useSelector } from "react-redux";
 import AppLayout from "src/components/layouts/AppLayout";
+import EmployeeApp from "./EmployeeApp";
+import { isAdmin } from "src/utils/roles";
 import { messaging } from "src/firebase";
 import { updateToken } from "src/firebase/messaging";
 import Attendance from "src/pages/app/Attendance";
@@ -30,6 +33,8 @@ import Reports from "src/pages/app/Reports";
 import { ROUTES } from "src/utils/constants";
 
 const App = () => {
+  const user = useSelector((state) => state.user);
+
   useEffect(() => {
     updateToken();
   }, []);
@@ -40,6 +45,9 @@ const App = () => {
       // 🧠 Optionally show a custom in-app notification here
     });
   }, []);
+
+  // Non-admin employees get the restricted self-service portal.
+  if (!isAdmin(user)) return <EmployeeApp />;
 
   return (
     <Routes>

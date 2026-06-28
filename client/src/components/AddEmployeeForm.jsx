@@ -47,8 +47,9 @@ export default function AddEmployeeForm({ isOpen, setIsOpen, getEmployees }) {
   const [photoName, setPhotoname] = useState("");
   const [bankAccount, set_bankAccount] = useState("");
   const [ifsc, set_ifsc] = useState("");
+  const [attendancePunchType, set_attendancePunchType] = useState("");
 
-  const { loading, handleAddEmployee, error } = useAddEmployee(name, email, dob, shift, empCode, mobile, designation, department, manager, password, documents, joiningDate, pan, photo, bankAccount, ifsc, handleClose);
+  const { loading, handleAddEmployee, error } = useAddEmployee(name, email, dob, shift, empCode, mobile, designation, department, manager, password, documents, joiningDate, pan, photo, bankAccount, ifsc, attendancePunchType, handleClose);
 
   return (
     <>
@@ -90,9 +91,31 @@ export default function AddEmployeeForm({ isOpen, setIsOpen, getEmployees }) {
               <ShiftSearchDropdown value={shift} setter={set_shift} />
               <NormalInput label={"Password"} value={password} setter={set_password} error={error.password} required />
             </div>
+            <div className="flex flex-col gap-2">
+              <p className="text-gray-100 font-bold">Attendance Punch Method</p>
+              <div className="flex flex-row gap-3">
+                {[
+                  { value: "", label: "Org Default" },
+                  { value: "qr", label: "QR / Device" },
+                  { value: "selfie", label: "Selfie + Location" },
+                ].map((opt) => (
+                  <button
+                    type="button"
+                    key={opt.value || "default"}
+                    onClick={() => set_attendancePunchType(opt.value)}
+                    className={`flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition ${
+                      attendancePunchType === opt.value ? "border-blue-500 bg-blue-500/20 text-white" : "border-gray-500 text-gray-300 hover:border-gray-300"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-gray-400">Controls which punch-in method this employee sees. Leave on Org Default to follow the organization setting.</p>
+            </div>
             <div className="border-2 rounded-md p-4 border-gray-400">
               <p className="text-gray-100 font-bold mb-4 col-span-3">Documents</p>
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 mb-4">{documents && documents.length ? documents.map((doc, index) => <DocTile index={index} doc={doc} documents={documents} set_documents={set_documents} />) : <p className="text-gray-400 col-span-3 text-center">No Documents</p>}</div>
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 mb-4">{documents && documents.length ? documents.map((doc, index) => <DocTile key={index} index={index} doc={doc} documents={documents} set_documents={set_documents} />) : <p className="text-gray-400 col-span-3 text-center">No Documents</p>}</div>
               <SolidButton title={"Add Document"} onClick={() => set_documents([...documents, { ...docTemplate }])} loading={loading} className="w-full" />
             </div>
             <div className="my-6 ">

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Pagination } from "flowbite-react";
 import { HiUserAdd } from "react-icons/hi";
 import { MdAdd } from "react-icons/md";
 import useDepartments from "src/API/hooks/useDepartments";

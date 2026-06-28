@@ -128,8 +128,8 @@ export const API = {
     list: ({ page, limit, name, code, description }) => get(`${endpoints.department.list}${buildSearchQuery({ page, limit, name, code, description })}`),
   },
   employee: {
-    create: ({ name, email, dob, shift, empCode, mobile, designation, department, manager, password, documents, joiningDate, pan, photo, bankAccount, ifsc }) => post(endpoints.employee.create, { name, email, dob, shift, empCode, mobile, designation, department, manager, password, documents, joiningDate, pan, photo, bankAccount, ifsc }),
-    update: ({ employeeId, name, email, shift, empCode, mobile, designation, department, manager, password, documents, joiningDate, pan, photo, bankAccount, ifsc, permissions }) => post(endpoints.employee.update, { employeeId, name, email, shift, empCode, mobile, designation, department, manager, password, documents, joiningDate, pan, photo, bankAccount, ifsc, permissions }),
+    create: ({ name, email, dob, shift, empCode, mobile, designation, department, manager, password, documents, joiningDate, pan, photo, bankAccount, ifsc, attendancePunchType }) => post(endpoints.employee.create, { name, email, dob, shift, empCode, mobile, designation, department, manager, password, documents, joiningDate, pan, photo, bankAccount, ifsc, attendancePunchType }),
+    update: ({ employeeId, name, email, shift, empCode, mobile, designation, department, manager, password, documents, joiningDate, pan, photo, bankAccount, ifsc, permissions, attendancePunchType }) => post(endpoints.employee.update, { employeeId, name, email, shift, empCode, mobile, designation, department, manager, password, documents, joiningDate, pan, photo, bankAccount, ifsc, permissions, attendancePunchType }),
     list: ({ page, limit, employeeId, empCode, name, email, mobile, department, designation, manager, status }) => get(`${endpoints.employee.list}${buildSearchQuery({ page, limit, employeeId, empCode, name, email, mobile, department, designation, manager, status })}`),
     get: ({ employee }) => get(`${endpoints.employee.get}${buildSearchQuery({ employee })}`),
   },

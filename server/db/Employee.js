@@ -20,6 +20,8 @@ const EmployeeSchema = new Schema(
     mobile: { type: String, unique: true },
     organization: { type: Schema.Types.ObjectId, ref: "Organization", default: null }, // Nullable for super admin
     shift: { type: Schema.Types.ObjectId, ref: "Shift", default: null }, // Nullable for super admin
+    // Per-employee attendance punch method (manager-controlled). null => fall back to org-wide setting.
+    attendancePunchType: { type: String, enum: ["qr", "selfie", null], default: null },
     isSuperAdmin: { type: Boolean, default: false },
     permissions: [{ type: String }],
     isActive: { type: Boolean, default: true },

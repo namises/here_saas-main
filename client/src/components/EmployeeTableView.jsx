@@ -24,7 +24,7 @@ const EmployeeTableView = ({ employees, loading }) => {
         <TableBody className="divide-y">
           {loading
             ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((v) => (
-                <TableRow className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                <TableRow key={v} className="bg-white dark:border-gray-700 dark:bg-gray-800">
                   <TableCell className="">
                     <div className="w-[90%] animate-pulse bg-white rounded-full p-2"></div>
                   </TableCell>
