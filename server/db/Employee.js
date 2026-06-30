@@ -1,7 +1,20 @@
 import { Schema, model } from "mongoose";
 import { FILE_URL_REGEX, IFSC_REGEX, PAN_REGEX } from "../utils/index.js";
 
-const DocumentSchema = new Schema({ name: { type: String, reqired: true }, url: { type: String, reqired: true }, type: { type: String, reqired: true } }, { _id: false });
+// Employee documents (Aadhaar, PAN, etc.). Keep _id so a specific doc can be edited/deleted by admins.
+// `category` is the document type label; `uploadedBy` records who added it (admin vs the employee themselves).
+const DocumentSchema = new Schema({
+  name: { type: String, reqired: true },
+  url: { type: String, reqired: true },
+  type: { type: String, reqired: true },
+  category: { type: String },
+  uploadedBy: { type: Schema.Types.ObjectId, ref: "Employee", default: null },
+  uploadedByRole: { type: String, enum: ["admin", "employee"], default: "admin" },
+  createdAt: { type: Number, default: () => Math.floor(Date.now() / 1000) },
+});
+
+// Prior employment history rows shown in the profile (Department / Designation / From / To).
+const WorkHistorySchema = new Schema({ department: String, designation: String, from: Number, to: Number, organization: String }, { _id: true });
 const LeaveBalanceSchema = new Schema(
   {
     //
@@ -32,6 +45,40 @@ const EmployeeSchema = new Schema(
     department: { type: Schema.Types.ObjectId, ref: "Department" },
     manager: { type: Schema.Types.ObjectId, ref: "Employee" },
     status: { type: String, enum: ["active", "inactive", "resigned", "terminated"], default: "active" },
+
+    // ---- Expanded profile: Personal ----
+    gender: { type: String, enum: ["male", "female", "other", null], default: null },
+    bloodGroup: { type: String, default: null },
+    maritalStatus: { type: String, enum: ["single", "married", "divorced", "widowed", null], default: null },
+
+    // ---- Contact ----
+    personalEmail: { type: String, default: null },
+    alternateMobile: { type: String, default: null },
+    address: { type: String, default: null },
+
+    // ---- Work ----
+    dateOfJoining: { type: Number, default: null }, // mirror of joiningDate for the expanded profile UI
+    probationPeriodMonths: { type: Number, default: null },
+    probationStatus: { type: String, enum: ["on-probation", "confirmed", "extended", null], default: null },
+    employeeType: { type: String, enum: ["full-time", "part-time", "contract", "intern", null], default: null },
+    workLocation: { type: String, default: null },
+    workExperienceYears: { type: Number, default: null },
+    billingStatus: { type: String, enum: ["billable", "non-billable", null], default: null },
+
+    // ---- Work info ----
+    jobTitle: { type: String, default: null },
+    subDepartment: { type: String, default: null },
+    workHistory: { type: [WorkHistorySchema], default: [] },
+
+    // ---- Resignation info ----
+    resignation: {
+      resignedOn: { type: Number, default: null },
+      lastWorkingDay: { type: Number, default: null },
+      reason: { type: String, default: null },
+      noticePeriodDays: { type: Number, default: null },
+      status: { type: String, enum: ["none", "submitted", "approved", "withdrawn", "completed"], default: "none" },
+    },
+
     documents: [DocumentSchema],
     leaveBalances: { type: [LeaveBalanceSchema], allowNull: true },
     _leaveMeta: {

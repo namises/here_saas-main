@@ -28,7 +28,7 @@ async function handler(req, res) {
     }
 
     const rawFilter = { organization, employee: employeeId, owner, status, leaveType };
-    const leaves = await paginate({ page, limit, Model: DB.LeaveRequest, rawFilter, filterConfig, populate: [{ path: "employee", select: "name designation" }], project: "fromDate toDate leaveType days status reason owner" });
+    const leaves = await paginate({ page, limit, Model: DB.LeaveRequest, rawFilter, filterConfig, populate: [{ path: "employee", select: "name designation" }, { path: "approvedBy", select: "name" }], project: "fromDate toDate leaveType days status reason owner approvedBy actionedAt" });
     return handleResponse(res, { message: "Leaves fetched successfully", leaves });
   } catch (error) {
     return handleError(res, error, error?.message);

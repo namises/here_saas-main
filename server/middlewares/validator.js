@@ -19,6 +19,9 @@ export const validate = (validation) => {
     if (error) {
       const joiError = {
         success: false,
+        // Surface the first detail as a top-level message so the client shows the real reason
+        // (the client reads `data.message`) instead of a generic "server error".
+        message: error.details?.[0]?.message?.replace(/['"]/g, "") || "Invalid request. Please review and try again.",
         error: {
           details: error.details.map(({ message, type }) => ({
             message: message.replace(/['"]/g, ""),

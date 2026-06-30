@@ -112,11 +112,12 @@ const AppLayout = () => {
             </div>
             <div className="flex items-center gap-3">
               <PWAInstallButton />
-              <MarkAttendance />
+              {/* Super admins (company owners) don't punch attendance. */}
+              {user?.isSuperAdmin ? null : <MarkAttendance />}
               <div className="flex items-center">
                 <button type="button" className="flex rounded-full bg-gray-800 text-sm focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" onClick={() => setUserMenuOpen(!userMenuOpen)}>
                   <span className="sr-only">Open user menu</span>
-                  <img className="h-8 w-8 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo" />
+                  <img className="h-8 w-8 rounded-full object-cover" src={user?.photo || "https://flowbite.com/docs/images/people/profile-picture-5.jpg"} alt="user photo" />
                 </button>
                 {userMenuOpen ? (
                   <div className="absolute right-4 top-14 z-50 my-4 list-none divide-y divide-gray-100 rounded-sm bg-white text-base shadow-sm dark:divide-gray-600 dark:bg-gray-700">

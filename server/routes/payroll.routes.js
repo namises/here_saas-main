@@ -8,5 +8,6 @@ payrollRouter.get("/list", validate(controllers.payroll.list.validation), contro
 payrollRouter.get("/export", validate(controllers.payroll.export.validation), controllers.payroll.export.handler);
 payrollRouter.get("/paySlip", validate(controllers.payroll.paySlip.validation), controllers.payroll.paySlip.handler);
 payrollRouter.post("/update", validate(controllers.payroll.update.validation), controllers.payroll.update.handler);
+payrollRouter.post("/generate", validate(controllers.payroll.generate.validation), controllers.payroll.generate.handler);
 
 export default payrollRouter;

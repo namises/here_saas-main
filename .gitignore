@@ -6,3 +6,6 @@ client/dev-dist
 localhost-cert.pem
 localhost-key.pem
 server/firebase.json
+
+# Local media uploads (Cloudinary fallback)
+server/uploads/

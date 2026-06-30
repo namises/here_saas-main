@@ -8,7 +8,8 @@ export const validatePassword = Joi.string().min(6).required();
 export const validateFinancialYear = Joi.string().pattern(/^[0-9]{4}-[0-9]{2}$/);
 export const validateUUIDv4 = Joi.string().guid({ version: ["uuidv4"] });
 export const PAN_REGEX = /^[A-Z]{5}[0-9]{4}[A-Z]$/;
-export const FILE_URL_REGEX = /^https:\/\/.*\/[^\/]+\.(webp|png|jpe?g)$/i;
+// Allow http(s) so locally-served uploads (http://localhost/uploads/..) validate alongside Cloudinary https URLs.
+export const FILE_URL_REGEX = /^https?:\/\/.*\/[^\/]+\.(webp|png|jpe?g)$/i;
 export const IFSC_REGEX = /^[A-Z]{4}0[A-Z0-9]{6}$/;
 
 export const castToObjectId = (id) => new Types.ObjectId(id);

@@ -18,6 +18,13 @@ import CheckBox from "src/components/CheckBox";
 import useUpdateEmployee from "src/API/hooks/useUpdateEmployee";
 import useEmployee from "src/API/hooks/useEmployee";
 import TestPreTag from "src/components/TestPreTag";
+import { Button } from "flowbite-react";
+import EmployeeProfileSections from "src/components/EmployeeProfileSections";
+import EmployeeProfileEdit from "src/components/EmployeeProfileEdit";
+import ProfileImageUpload from "src/components/ProfileImageUpload";
+import { API } from "src/API/api";
+import { dispatchSnackbar, snackBarTypes } from "src/utils/snackbar";
+import { statusClass, titleCase } from "src/utils/ui";
 export default function Employee() {
   const { id } = useParams() || {};
 
@@ -28,7 +35,7 @@ export default function Employee() {
   ) : (
     <Tabs variant="underline">
       <TabItem title="Profile" icon={HiUserCircle}>
-        <Profile {...{ _id, name, email, mobile, isSuperAdmin, isActive, dob, photo, bankAccount, pan, ifsc, joiningDate, designation, empCode, department, manager, status }} />
+        <Profile employee={employee} getEmployee={getEmployee} />
       </TabItem>
       <TabItem title="Documents" icon={MdDashboard}>
         <Documents documents={documents} />
@@ -44,28 +51,53 @@ export default function Employee() {
   );
 }
 
-const Profile = ({ _id, name, email, mobile, isSuperAdmin, isActive, photo, bankAccount, pan, ifsc, dob, joiningDate, designation, empCode, department, manager, status }) => {
+const Profile = ({ employee, getEmployee }) => {
+  const e = employee || {};
+  const [editing, setEditing] = useState(false);
+
+  // Admin changes the photo → save immediately and refresh.
+  const changePhoto = async (url) => {
+    const res = await API.employee.update({ employeeId: e._id, photo: url });
+    if (res?.success) {
+      dispatchSnackbar("Photo updated", snackBarTypes.success);
+      getEmployee();
+    } else {
+      dispatchSnackbar(res?.message || "Could not update photo", snackBarTypes.failure);
+    }
+  };
+
   return (
-    <>
-      <div className="p-4 flex justify-center mb-4 items-center gap-x-2">
-        <img src={photo} className={`w-52 rounded-full border-4 ${status === "active" ? "border-green-700" : "border-yellow-700"}`} alt={name} srcset="" />
+    <div className="mt-4 flex flex-col gap-5">
+      <div className="flex flex-col items-center gap-3 rounded-2xl bg-white p-5 shadow-sm dark:bg-gray-800">
+        <ProfileImageUpload value={e.photo} onChange={changePhoto} />
+        <div className="text-center">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white">{e.name}</h2>
+          <p className="text-sm text-gray-400">{e.designation || "Employee"}</p>
+          <div className="mt-1 flex items-center justify-center gap-2">
+            {e.empCode ? <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-600 dark:bg-blue-900/40 dark:text-blue-300">#{e.empCode}</span> : null}
+            {e.status ? <span className={`rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${statusClass(e.status)}`}>{titleCase(e.status)}</span> : null}
+          </div>
+        </div>
+        {!editing ? (
+          <Button color="blue" size="sm" onClick={() => setEditing(true)}>
+            <MdEdit className="mr-1.5" /> Edit details
+          </Button>
+        ) : null}
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 bg-gray-600 rounded-md p-4 justify-center items-center">
-        <NormalInput disabled={true} label={"Employee Code"} value={empCode} />
-        <NormalInput disabled={true} label="Name" value={name} />
-        <NormalInput disabled={true} label="Email" value={email} />
-        <NormalInput disabled={true} label="Mobile" value={mobile} />
-        <DateInput disabled={true} label={"Date Of Birth"} value={dob} />
-        <DateInput disabled={true} label={"Date Of Joining"} value={joiningDate} />
-        <NormalInput disabled={true} label={"Designation"} value={designation} />
-        <DepartmentSearchDropdown disabled={true} label={"Department"} value={department?._id} />
-        <EmployeeSearchDropdown disabled={true} label={"Manager"} value={manager?._id} />
-        <NormalInput disabled={true} label={"PAN"} value={pan} />
-        <NormalInput disabled={true} label={"Bank Account"} value={bankAccount} />
-        <NormalInput disabled={true} label={"IFSC"} value={ifsc} />
-      </div>
-      {/* <pre>{JSON.stringify(employee, null, 2)}</pre>; */}
-    </>
+
+      {editing ? (
+        <EmployeeProfileEdit
+          employee={e}
+          onSaved={() => {
+            setEditing(false);
+            getEmployee();
+          }}
+          onCancel={() => setEditing(false)}
+        />
+      ) : (
+        <EmployeeProfileSections employee={e} />
+      )}
+    </div>
   );
 };
 const Documents = ({ documents }) => {

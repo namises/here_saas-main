@@ -2,7 +2,7 @@ import Joi from "joi";
 import { handleError, handleResponse } from "../../utils/handlers.js";
 import { MAX_FILE_SIZE } from "../../utils/constants.js";
 import { toValidateOptions } from "../../middlewares/validator.js";
-import { v2 as cloudinary } from "cloudinary";
+import { storeFile } from "../../utils/mediaStorage.js";
 import { promises as fs } from "fs";
 
 const ALLOWED_MIME_TYPES = [
@@ -40,13 +40,9 @@ async function handler(req, res) {
       throw new Error("Invalid file type. Only images and documents are allowed.");
     }
 
-    const upload = await cloudinary.uploader.upload(tempFilePath, {
-      filename_override: name,
-      resource_type: "auto",
-      folder: "here",
-      unique_filename: true,
-    });
-    const url = upload.secure_url;
+    // Store the upload — Cloudinary if configured, else local disk.
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    const url = await storeFile(tempFilePath, { originalName: name, folder: "media", baseUrl });
     await removeFile();
     return handleResponse(res, {
       message: "Asset uploaded successfully",

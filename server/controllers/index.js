@@ -31,6 +31,7 @@ import updateCTC from "./ctc/update.js";
 import listCTC from "./ctc/list.js";
 import listPayroll from "./payroll/list.js";
 import updatePayroll from "./payroll/update.js";
+import generatePayroll from "./payroll/generate.js";
 import createShift from "./shift/create.js";
 import listShift from "./shift/list.js";
 import updateShift from "./shift/update.js";
@@ -118,6 +119,7 @@ const controllers = {
   payroll: {
     list: listPayroll,
     update: updatePayroll,
+    generate: generatePayroll,
     paySlip: paySlip,
     export: exportPayroll,
   },

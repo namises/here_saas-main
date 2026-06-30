@@ -24,7 +24,7 @@ const Calendar = () => {
       <ShiftSelector holidays={holidays} getHolidays={getHolidays} createHoliday={createHoliday} updateHoliday={updateHoliday} deleteHoliday={deleteHoliday} onClickAddHoliday={onClickAddHoliday} onClickDeleteholidayInCreation={onClickDeleteholidayInCreation} holidayInCreation={holidayInCreation} setHolidayInCreation={setHolidayInCreation} holidayLoading={holidayLoading} holidayError={holidayError} shifts={shifts} createShift={createShift} updateShift={updateShift} deleteShift={deleteShift} onClickAddShift={onClickAddShift} onClickDeleteShiftInCreation={onClickDeleteShiftInCreation} shiftInCreation={shiftInCreation} setShiftInCreation={setShiftInCreation} loading={loading} shiftError={shiftError} workDays={workDays} setWorkDay={setWorkDay} updateWorkDays={updateWorkDays} loadingWorkDays={loadingWorkDays} isOpen={isShiftSelectorOpen} setIsOpen={setIsShiftSelectorOpen} />
       <div className="grid mt-5 grid-cols-1 xl:grid-cols-3 justify-center gap-3 py-2">
         <div className="col-span-1">
-          <WorkDays workDays={workDays} loading={loadingWorkDays} />
+          <WorkDays workDays={workDays} loading={loadingWorkDays} setWorkDay={setWorkDay} updateWorkDays={updateWorkDays} />
         </div>
         <div className="col-span-1">
           <ShiftTimings shifts={shifts} loading={loading} />

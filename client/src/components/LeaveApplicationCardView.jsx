@@ -4,9 +4,13 @@ import { formatTimestampToHumandate, formatTimestampToHumandateTime } from "src/
 import { MdEdit } from "react-icons/md";
 import { useSelector } from "react-redux";
 import SolidButton from "./SolidButton";
+import { isAdmin } from "src/utils/roles";
 
 const LeaveApplicationCardView = ({ leaveApplications, loading, approve, reject, approvalLoading, rejectionLoading, setIsLeaveUpdateFormOpen }) => {
-  const { employee } = useSelector((state) => state.user);
+  const user = useSelector((state) => state.user);
+  const employee = user?.employee;
+  // Owner (assigned approver) OR any admin/super admin can act on a pending leave.
+  const canAct = (item) => item?.status === "pending" && (item?.owner === employee || isAdmin(user));
 
   return (
     <div className="flex flex-wrap justify-center gap-4 mt-5">
@@ -37,8 +41,8 @@ const LeaveApplicationCardView = ({ leaveApplications, loading, approve, reject,
                   <p className="w-full font-normal text-sm text-gray-700 dark:text-gray-400">Reason - {item?.reason}</p>
                   {item?.status === "pending" ? (
                     <div className="w-full grid grid-cols-2 gap-x-4 mb-1">
-                      {item?.owner === employee ? <SolidButton title={"Approve"} onClick={() => approve(item?._id)} loading={approvalLoading} /> : null}
-                      {item?.owner === employee ? <SolidButton title={"Reject"} onClick={() => reject(item?._id)} loading={rejectionLoading} /> : null}
+                      {canAct(item) ? <SolidButton title={"Approve"} onClick={() => approve(item?._id)} loading={approvalLoading} /> : null}
+                      {canAct(item) ? <SolidButton title={"Reject"} onClick={() => reject(item?._id)} loading={rejectionLoading} /> : null}
                     </div>
                   ) : null}
                 </div>

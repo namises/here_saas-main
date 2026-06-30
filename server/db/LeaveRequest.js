@@ -11,6 +11,9 @@ const LeaveRequestSchema = new Schema(
     status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },
     reason: String,
     owner: { type: Schema.Types.ObjectId, ref: "Employee" },
+    // Who actioned (approved/rejected) the leave, and when.
+    approvedBy: { type: Schema.Types.ObjectId, ref: "Employee", default: null },
+    actionedAt: { type: Number, default: null },
   },
   { timestamps: true }
 );

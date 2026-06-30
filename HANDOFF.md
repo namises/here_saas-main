@@ -2,10 +2,68 @@
 
 > Living progress file. **Resume from Phase 6 (Remaining / follow-ups) — Phases 1–5 are built & build-verified.**
 > Legend: `[x] DONE` · `[~] ACTIVE` (in progress, may be partial) · `[ ] PENDING`
-> Last updated: 2026-06-27
+> Last updated: 2026-06-28
 >
 > **Status:** Employee Portal foundation + core pages shipped and `yarn build` passes. Not yet manually
 > run against a live employee login — verify by logging in as a non-admin employee (created via Add Employee).
+>
+> **ROUND 2 IN PROGRESS (2026-06-28):** profile/documents/roles overhaul — see "Round 2 roadmap" below.
+
+## Round 2 roadmap — Profile / Documents / Roles overhaul
+Big multi-part request (2026-06-28). Foundation done; large UI + role-scoping pending.
+
+### Done this round (build-verified)
+- [x] **Working days editable** — `WorkDays.jsx` was display-only; now tap-to-toggle + Save (wired in `Calendar.jsx`
+      via the hook's existing `setWorkDay`/`updateWorkDays`). Backend `/workDays/update` was always fine.
+- [x] **Super admin doesn't punch** — `AppLayout.jsx` hides `<MarkAttendance />` when `user.isSuperAdmin`.
+- [x] **Employee model expanded** (`server/db/Employee.js`): personal (gender, bloodGroup, maritalStatus),
+      contact (personalEmail, alternateMobile, address), work (dateOfJoining, probationPeriodMonths, probationStatus,
+      employeeType, workLocation, workExperienceYears, billingStatus), work-info (jobTitle, subDepartment,
+      `workHistory[]` = {department,designation,from,to}), `resignation{}`. `DocumentSchema` now has `_id`,
+      `category`, `uploadedBy`, `uploadedByRole`, `createdAt`.
+- [x] **`employee/update.js`**: accepts all new fields; **self-edits are whitelisted** to personal fields only
+      (employees can't escalate permissions/status/etc.); employees are **append-only on documents** (can't
+      delete/modify existing); admins (`employee.update`) get full control. Fixed the pre-existing `organization`
+      ReferenceError in the manager block.
+- [x] **`API.employee.update`** now passes the full payload through (no per-field enumeration).
+
+### Pending (the big remaining work)
+- [x] **A. Expanded profile UI** — DONE. `components/EmployeeProfileSections.jsx` (read view: Personal · Contact ·
+      Work · Work Info · Work History table · Resignation) + `components/EmployeeProfileEdit.jsx` (full admin edit form).
+      Wired into employee `MyProfile.jsx` (sectioned view + self-edit of personal fields + photo) and the admin
+      `pages/app/Employee.jsx` Profile tab (ProfileImageUpload that saves the photo immediately + "Edit details" →
+      full edit incl. **attendancePunchType**, which also covers most of item F's per-employee punch-method ask).
+      Add/Edit Employee *forms* still capture only the basics → item G.
+- [~] **B. Profile image upload** — DONE for employee `MyProfile`: new `components/ProfileImageUpload.jsx`
+      gives **Camera** + **device file upload** (any image format) via `API.media.upload`; camera capture is
+      converted to a `File` with `DataTransfer`. Photo persists on "Save changes". STILL TODO: use the same
+      component in Add/Edit Employee forms (they currently use device-only `FileUpload.jsx`, no camera).
+- [ ] **C. Documents = employee documents** — the employee **Documents** portal page must show the employee's
+      OWN `Employee.documents` (Aadhaar/PAN/etc.), allow **upload (append)** but **no delete/edit**. Admin manages
+      (add/edit/delete) the same docs from the employee-detail view. (Add Employee already uploads docs at creation.)
+      NOTE: the current `pages/employee/Documents.jsx` shows **company** documents — repurpose or split.
+- [x] **D (revised). Admins/managers get the ADMIN dashboard, not the employee portal.** Per user (2026-06-28):
+      "for admins I want the super-admin-type dashboard, not employee type." `isAdmin()` now also treats anyone with
+      `employee.read` (managers) as admin → they land on `AppLayout`/admin dashboard. Only plain employees
+      (`employee.read.own` only) get the employee portal.
+- [x] **Admins = FULL access like super admin** (user decision 2026-06-28: "make admins full access like superadmin").
+      `server/middlewares/rbac.js` now bypasses granular RBAC for ANY admin/manager (`isSuperAdmin` OR has
+      `employee.read`/`employee.create`), setting `matchedPermissions = permissionsPresets.superadmin` — same as the
+      super-admin bypass. Migration-free (works off the token's permissions). Verified a manager w/o `analytics.read`
+      now gets 200 on `/analytics/overview`. **This SUPERSEDES the earlier team-scoping idea (item E) — all admins
+      see all org data now.** Plain employees still go through granular RBAC.
+- [~] **E. Team-scoping — DROPPED per user.** User chose "make admins full access like superadmin" (2026-06-28),
+      so admins now see all org data (rbac bypass above). Keep this note only in case the requirement flips back.
+- [ ] **F. Admin manages team attendance** — view/edit team members' attendance & profiles; change any team
+      member's `attendancePunchType` (type one/two) anytime. The admin's OWN attendance requests are approved by
+      the super admin.
+- [ ] **G. Add/Edit Employee forms** updated to capture the full expanded field set (currently only the basics).
+
+### Notes / decisions for Round 2
+- Per-employee punch method already exists end-to-end (Round 1) — item F just needs an admin UI to set it on any team member.
+- Team membership = `Hierarchy.reportsTo` chain (already seeded: staff → dept manager → super admin).
+- These pieces share core files (profile components, `api.jsx`, Employee model) so they DON'T cleanly parallelize
+  across agents without conflicts — recommend sequential pushes (foundation is now in place).
 
 ## Goal
 The app currently shows **every** logged-in user the full admin dashboard/sidebar.
@@ -106,6 +164,46 @@ Log in as a "Staff" account to see the **Employee Portal**; admins/HR get the fu
   for non-super-admins rbac ran `undefined.filter(...)` → threw → endpoint returned null → `useOrgSettings`
   crashed on `null.success`. Fixed: added `organization/settings` (`"*"`) + `updateSettings` to the map,
   made rbac deny cleanly (403) on any unmapped route instead of crashing, and null-guarded `useOrgSettings`.
+
+- **Employees couldn't punch ("not permitted")** — `/attendance/markSelfie` was never in the rbac map, and
+  `/attendance/mark` required `attendance.create` which the `employee` preset doesn't have. Both mark controllers
+  are **self-only** (they punch `req.user.employee`), so both are now mapped to `"*"` (any authenticated user may
+  mark their OWN attendance). Verified an employee token now passes rbac on markSelfie. NOTE: the selfie controller
+  still gates on the **org-wide** `attendancePunchType` (must be selfie/both) — not the per-employee value; revisit
+  if you want strict per-employee enforcement server-side.
+
+- **"Invalid cloud_name here" on punch/upload** — `.env` has the placeholder `CLOUDINARY_CLOUD_NAME=here`, so every
+  image upload (selfie punch + profile photo + docs) failed. Added `server/utils/mediaStorage.js`: uses Cloudinary
+  when real creds are set, otherwise stores files under `server/uploads/` and serves them via `app.use("/uploads", ...)`.
+  Wired into `attendance/markSelfie.js` and `media/upload.js`. Relaxed `FILE_URL_REGEX` to allow `http(s)` so local
+  URLs validate. `server/uploads/` is gitignored. **To use real Cloudinary, just set the `CLOUDINARY_*` vars in `.env`.**
+
+- **Employees couldn't upload (photo/docs) — "not permitted"** — `/media/upload` required `media.create` (org-admin
+  only). Mapped it to `"*"` in rbac (any authenticated user; it's already MIME/size-limited). Employee `MyProfile`
+  photo upload now persists immediately + updates redux so the top-right avatar refreshes instantly.
+
+- **Admin "server error" editing an employee** — `EmployeeProfileEdit` sent `pan:""` for employees with no PAN,
+  failing Joi `.length(10)`; and `middlewares/validator.js` returned validation errors WITHOUT a top-level `message`
+  (client reads `data.message` → showed generic "server error"). Fixed: form omits empty fields; validator now
+  includes `message` = first Joi detail. Verified admin update succeeds; bad input now returns a clear message.
+
+- **Leave approve/reject was owner-locked** — only the assigned `owner` could act (backend threw "You cannot
+  approve/reject this leave"; UI hid the buttons). Now super admins/admins (`employee.read`) can act on ANY pending
+  leave (backend `approve.js`/`reject.js` + `LeaveApplicationTableView`/`CardView` show buttons via `canAct`).
+  Verified a super admin approving a non-owned leave returns success.
+- **Admin top-right avatar** — `AppLayout` used a hard-coded placeholder; now uses `user?.photo` (like EmployeeLayout).
+
+## Leaves in Approvals + approver badge (built 2026-06-29)
+- Approvals page (`pages/app/Approvals.jsx`) is now tabbed: "Workflow Requests" (existing ApprovalRequest) +
+  "Leaves" (`components/LeavesApprovalPanel.jsx` — real LeaveRequests with approve/reject).
+- Leave now records WHO actioned it: `LeaveRequest.approvedBy` + `actionedAt`, set in `leave/approve.js`+`reject.js`,
+  populated in `leave/list.js`. Panel shows a green "Approved by NAME" / red "Rejected by NAME" badge.
+
+## Resignation flow (built 2026-06-29)
+- Employee: `MyProfile` → "Apply for resignation" (last working day, notice days, reason) → `employee/update`
+  with `resignation` → backend forces `status:"submitted"` for self-edits (employees can submit/withdraw, not approve).
+- Admin: employee detail → Edit details → "Resignation" group (status/dates/reason/notice). Setting status
+  Approved/Completed also sets employee `status:"resigned"`.
 
 ## Notes for whoever resumes
 - Pre-existing bug spotted (still open, not yet hit): `server/controllers/employee/update.js` references

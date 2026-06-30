@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from "react";
-import { LuGitPullRequestArrow, LuClock, LuCircleCheck, LuCircleX, LuPlus, LuCheck, LuX, LuTrash2 } from "react-icons/lu";
+import { Tabs, TabItem } from "flowbite-react";
+import { LuGitPullRequestArrow, LuClock, LuCircleCheck, LuCircleX, LuPlus, LuCheck, LuX, LuTrash2, LuCalendarX2 } from "react-icons/lu";
 import useResource from "src/API/hooks/useResource";
+import LeavesApprovalPanel from "src/components/LeavesApprovalPanel";
 import { ChartCard, DonutChart, BarChart, groupCount } from "src/components/charts";
 import StatCard from "src/components/charts/StatCard";
 import { PageHeader, Segmented, StatusBadge, Avatar, EmptyState } from "src/components/resource/Bits";
@@ -39,6 +41,8 @@ const Approvals = () => {
         <SolidButton title="New Request" Icon={LuPlus} onClick={() => setOpen(true)} />
       </PageHeader>
 
+      <Tabs variant="underline">
+        <TabItem active title="Workflow Requests" icon={LuGitPullRequestArrow}>
       <div className="mb-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard label="Pending" value={count("pending")} Icon={LuClock} accent="#f59e0b" />
         <StatCard label="Approved" value={count("approved")} Icon={LuCircleCheck} accent="#10b981" />
@@ -99,6 +103,11 @@ const Approvals = () => {
           ))}
         </div>
       )}
+        </TabItem>
+        <TabItem title="Leaves" icon={LuCalendarX2}>
+          <LeavesApprovalPanel />
+        </TabItem>
+      </Tabs>
 
       <ResourceFormDrawer open={open} onClose={() => setOpen(false)} title="New Approval Request" fields={fields} editing={null} submitting={submitting} onSubmit={create} />
     </>

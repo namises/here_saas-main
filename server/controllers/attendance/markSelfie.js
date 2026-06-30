@@ -4,7 +4,7 @@ import DB from "../../db/index.js";
 import { toValidateOptions } from "../../middlewares/validator.js";
 import { now } from "../../utils/index.js";
 import dayjs from "dayjs";
-import { v2 as cloudinary } from "cloudinary";
+import { storeDataUrl } from "../../utils/mediaStorage.js";
 
 async function handler(req, res) {
   try {
@@ -16,13 +16,9 @@ async function handler(req, res) {
       throw new Error("Selfie punch-in is not enabled for this organization");
     }
 
-    // Upload selfie (base64 data URL) to Cloudinary
-    const upload = await cloudinary.uploader.upload(selfie, {
-      folder: "here/selfies",
-      resource_type: "image",
-      unique_filename: true,
-    });
-    const selfieUrl = upload.secure_url;
+    // Store the selfie (base64 data URL) — Cloudinary if configured, else local disk.
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    const selfieUrl = await storeDataUrl(selfie, { folder: "selfies", baseUrl });
 
     const currentTime = now();
     const pastWindow = dayjs(currentTime * 1000).subtract(24, "hour").unix();

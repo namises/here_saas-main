@@ -5,9 +5,13 @@ import SolidButton from "./SolidButton";
 import { useSelector } from "react-redux";
 import { MdEdit } from "react-icons/md";
 import { formatTimestampToHumandate } from "src/utils";
+import { isAdmin } from "src/utils/roles";
 
 const LeaveApplicationTableView = ({ leaveApplications, loading, approve, reject, approvalLoading, rejectionLoading, setIsLeaveUpdateFormOpen }) => {
-  const { employee } = useSelector((state) => state.user);
+  const user = useSelector((state) => state.user);
+  const employee = user?.employee;
+  // Owner (assigned approver) OR any admin/super admin can act on a pending leave.
+  const canAct = (item) => item?.status === "pending" && (item?.owner === employee || isAdmin(user));
   return (
     <div className="overflow-x-auto mt-5">
       <Table hoverable>
@@ -52,8 +56,8 @@ const LeaveApplicationTableView = ({ leaveApplications, loading, approve, reject
                       {item?.status}
                     </Badge>
                   </TableCell>
-                  <TableCell> {item?.owner === employee && item?.status === "pending" ? <SolidButton title={"Approve"} onClick={() => approve(item?._id)} loading={approvalLoading} /> : null}</TableCell>
-                  <TableCell> {item?.owner === employee && item?.status === "pending" ? <SolidButton title={"Reject"} onClick={() => reject(item?._id)} loading={rejectionLoading} /> : null}</TableCell>
+                  <TableCell> {canAct(item) ? <SolidButton title={"Approve"} onClick={() => approve(item?._id)} loading={approvalLoading} /> : null}</TableCell>
+                  <TableCell> {canAct(item) ? <SolidButton title={"Reject"} onClick={() => reject(item?._id)} loading={rejectionLoading} /> : null}</TableCell>
                   <TableCell>{item?.employee?._id === employee && item?.status === "pending" ? <MdEdit className="text-xl cursor-pointer" title={"Edit"} onClick={() => setIsLeaveUpdateFormOpen({ ...item })} /> : null}</TableCell>
                 </TableRow>
               ))

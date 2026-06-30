@@ -64,6 +64,7 @@ export const endpoints = {
   },
   payroll: {
     update: `${API_BASE_URL}${version}/payroll/update`,
+    generate: `${API_BASE_URL}${version}/payroll/generate`,
     list: `${API_BASE_URL}${version}/payroll/list`,
     export: `${API_BASE_URL}${version}/payroll/export`,
     paySlip: `${API_BASE_URL}${version}/payroll/paySlip`,
@@ -129,7 +130,7 @@ export const API = {
   },
   employee: {
     create: ({ name, email, dob, shift, empCode, mobile, designation, department, manager, password, documents, joiningDate, pan, photo, bankAccount, ifsc, attendancePunchType }) => post(endpoints.employee.create, { name, email, dob, shift, empCode, mobile, designation, department, manager, password, documents, joiningDate, pan, photo, bankAccount, ifsc, attendancePunchType }),
-    update: ({ employeeId, name, email, shift, empCode, mobile, designation, department, manager, password, documents, joiningDate, pan, photo, bankAccount, ifsc, permissions, attendancePunchType }) => post(endpoints.employee.update, { employeeId, name, email, shift, empCode, mobile, designation, department, manager, password, documents, joiningDate, pan, photo, bankAccount, ifsc, permissions, attendancePunchType }),
+    update: (payload) => post(endpoints.employee.update, payload),
     list: ({ page, limit, employeeId, empCode, name, email, mobile, department, designation, manager, status }) => get(`${endpoints.employee.list}${buildSearchQuery({ page, limit, employeeId, empCode, name, email, mobile, department, designation, manager, status })}`),
     get: ({ employee }) => get(`${endpoints.employee.get}${buildSearchQuery({ employee })}`),
   },
@@ -170,6 +171,7 @@ export const API = {
   },
   payroll: {
     update: ({ payrollId, month, status, presentDays, totalWorkingDays, remarks, components }) => post(endpoints.payroll.update, { payrollId, month, status, presentDays, totalWorkingDays, remarks, components }),
+    generate: ({ employee, month, financialYear }) => post(endpoints.payroll.generate, { employee, month, financialYear }),
     list: ({ page, limit, employee, month, status, financialYear }) => get(`${endpoints.payroll.list}${buildSearchQuery({ page, limit, employee, month, status, financialYear })}`),
     export: ({ employee, month, status, financialYear }) => get(`${endpoints.payroll.export}${buildSearchQuery({ employee, month, status, financialYear })}`, true),
     paySlip: ({ payrollId }) => get(`${endpoints.payroll.paySlip}${buildSearchQuery({ payrollId })}`, true),

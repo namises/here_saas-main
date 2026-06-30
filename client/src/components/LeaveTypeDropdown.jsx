@@ -5,7 +5,8 @@ import useLeaveBalance from "src/API/hooks/useLeaveBalance";
 const LeaveTypeDropdown = ({ value, setter, label = "Leave Type", required = false }) => {
   const { leaveBalances, loading, error } = useLeaveBalance();
 
-  const leaves = useMemo(() => leaveBalances?.leaveBalances?.map((l) => ({ _id: l?.leaveType, value: l?.leaveType, label: l?.leaveType, carryForwarded: l?.carryForwarded, credited: l?.credited, used: l?.used })), [leaveBalances]);
+  // useLeaveBalance returns the balances array directly (each has leaveType/credited/used/carryForwarded).
+  const leaves = useMemo(() => (Array.isArray(leaveBalances) ? leaveBalances : []).map((l) => ({ _id: l?.leaveType, value: l?.leaveType, label: l?.leaveType, carryForwarded: l?.carryForwarded, credited: l?.credited, used: l?.used })), [leaveBalances]);
 
   const getDisplayValue = (item) => `${item?.label} - Balance - ${item?.credited + item?.carryForwarded - item?.used}`;
 

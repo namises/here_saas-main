@@ -16,10 +16,19 @@ const PayrollSchema = new Schema(
     employee: { type: Schema.Types.ObjectId, ref: "Employee" },
     month: { type: String, required: true, enum: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"] },
     status: { type: String, enum: ["pending", "processed"], default: "pending" },
-    totalWorkingDays: { type: Number, required: true },
+    totalDaysInMonth: { type: Number, default: 0 }, // calendar days in the month
+    totalWorkingDays: { type: Number, required: true }, // days the employee was expected to work (excl. week-offs/holidays)
     presentDays: { type: Number, required: true },
-    grossSalary: { type: Number, required: true }, // auto-calculated
-    netSalary: { type: Number, required: true }, // auto-calculated
+    // Attendance breakdown for the period
+    absentDays: { type: Number, default: 0 },
+    halfDays: { type: Number, default: 0 },
+    leaveDays: { type: Number, default: 0 },
+    holidayDays: { type: Number, default: 0 },
+    weekOffDays: { type: Number, default: 0 },
+    payableDays: { type: Number, default: 0 }, // present + half*0.5 + leave + holiday + weekoff
+    grossSalary: { type: Number, required: true }, // auto-calculated (prorated earnings)
+    totalDeductions: { type: Number, default: 0 },
+    netSalary: { type: Number, required: true }, // gross - deductions
     remarks: String,
     financialYear: { type: String, required: true }, // e.g., "2025-26"
     components: [PayrollComponentSchema],

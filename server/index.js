@@ -13,6 +13,7 @@ import upload from "express-fileupload";
 import swaggerSpec from "./swagger/specs.js";
 import { handleError } from "./utils/handlers.js";
 import rootRouter from "./routes/v1.js";
+import { UPLOADS_DIR } from "./utils/mediaStorage.js";
 
 import "./cron/index.js";
 import "./utils/firebase.js";
@@ -64,6 +65,9 @@ app.use(logger("dev"));
 
 // Serve static frontend
 app.use(express.static(path.resolve(__dirname, "../dist")));
+
+// Serve locally-stored uploads (used as the fallback when Cloudinary isn't configured)
+app.use("/uploads", express.static(UPLOADS_DIR));
 
 //fileUpload
 app.use(upload({ useTempFiles: true, tempFileDir: path.resolve(__dirname, "../dist"), safeFileNames: true, preserveExtension: 4, limits: { fileSize: MAX_FILE_SIZE } }));
