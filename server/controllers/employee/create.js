@@ -95,7 +95,7 @@ const schema = Joi.object().keys({
       Joi.object({
         name: Joi.string().required(),
         url: Joi.string()
-          .pattern(/^https:\/\/.*\/[^\/]+\.(webp|png|jpe?g|pdf|docx?)$/i)
+          .pattern(/^https?:\/\/.*\/[^\/]+\.(webp|png|jpe?g|pdf|docx?)$/i)
           .message("Invalid file URL format")
           .required(),
         type: Joi.string().max(64).required(),

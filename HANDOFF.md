@@ -138,11 +138,13 @@ Request Reimbursement · Notes · Holidays · Documents · CRM.
 - Notes: persist server-side (recommended) or local only?
 - Alarm: in-app only, or push via existing FCM/firebase messaging already wired in the app?
 
-## Testing with seed data
-`yarn seed` (or `node server/seed.js`) creates 3 demo orgs × 108 people; password for all = `password123`.
-It now sets per-employee `attendancePunchType` (rotates selfie/qr/null across staff) and prints example logins:
-**Staff · selfie** (selfie+location punch only), **Staff · QR** (QR-only), plus admin/HR/finance logins.
-Log in as a "Staff" account to see the **Employee Portal**; admins/HR get the full admin app.
+## Testing with seed data (rewritten 2026-06-29)
+`yarn seed` (or `node server/seed.js`) **WIPES the entire DB**, then creates **2 orgs** (Acme `acme.ae`,
+Globex `globex.ae`). Each org = **2 admins** (super-admin owner + admin) + **2 employees per admin** (4 emps/org),
+plus department/shift/workdays/CTC/attendance/leave-balances/holidays. Password for all = `password123`.
+Logins per org: `superadmin@<domain>` (owner, manages emp1+emp2), `admin@<domain>` (manages emp3+emp4),
+`emp1..4@<domain>`. Admins → admin dashboard; `emp*` → employee portal. CTC + attendance are seeded so the
+manual Payroll generate + attendance calendar have data.
 
 ## Bugs fixed (pre-existing, surfaced during testing)
 - **rbac super-admin crash** — `server/middlewares/rbac.js` bypassed RBAC for super admins via `next()` but

@@ -1,6 +1,7 @@
 import { GENDER_OPTIONS, OTP_LENGTH } from "src/utils/constants";
 
-export const FILE_URL_REGEX = /^https:\/\/.*\/[^\/]+\.(webp|png|jpe?g|pdf|docx?)$/i;
+// Allow http(s) so locally-served uploads (http://localhost/uploads/..) validate alongside Cloudinary https URLs.
+export const FILE_URL_REGEX = /^https?:\/\/.*\/[^\/]+\.(webp|png|jpe?g|pdf|docx?)$/i;
 
 export const validatePhoneNumber = (mobileNo) => /^(0|91)?[6-9][0-9]{9}$/.test(mobileNo);
 export const validateObjectId = (objectId) => /^[0-9a-fA-F]{24}$/.test(objectId);

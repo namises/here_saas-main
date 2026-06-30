@@ -93,20 +93,24 @@ export const post = async (url, requestBody) => {
 };
 
 export const postMultipart = async (url, requestBody) => {
-  console.log({ requestBody });
   let initials = getURLInitials(url);
   try {
     const t = await storage.get(storage.keys.token);
     setLoadingTrue(initials);
+    const ipdata = await getipInfo();
     const formData = new FormData();
-    Object.keys(requestBody).forEach((k) => {
-      console.log({ k });
-      if (requestBody[k]) {
-        formData.append(k, requestBody[k]);
-      }
-    });
-    const headers = await getHeaders(t, true);
-    const response = await axios.post(url, requestBody, headers);
+    // requestBody is a FileList / File[] from an <input type="file">. The server reads req.files["files[]"].
+    const list = requestBody instanceof FileList ? Array.from(requestBody) : Array.isArray(requestBody) ? requestBody : null;
+    if (list) {
+      list.forEach((file) => formData.append("files[]", file));
+    } else {
+      Object.keys(requestBody || {}).forEach((k) => {
+        if (requestBody[k]) formData.append(k, requestBody[k]);
+      });
+    }
+    // Do NOT set Content-Type manually — the browser must add the multipart boundary itself.
+    const headers = { "x-locale": ipdata?.languages?.length ? ipdata.languages.split(",")[0] : "en-IN", ...(t ? { Authorization: `Bearer ${t}` } : {}) };
+    const response = await axios.post(url, formData, { headers });
     return handleResponse("post", initials, response, requestBody, url);
   } catch (error) {
     handleError("post", initials, error, requestBody, url);
